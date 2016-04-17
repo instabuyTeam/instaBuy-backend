@@ -36,6 +36,7 @@ module.exports = {
     });
   },
   pushPayment: function(req, res) {
+    console.log('hit!!');
     requests.post({
       uri: "https://sandbox.api.visa.com/visadirect/fundstransfer/v1/pushfundstransactions",
       key: fs.readFileSync(keyFile),
@@ -78,7 +79,7 @@ module.exports = {
       })
     }, (err, resp, body) => {
       if (err) res.send(err);
-      res.send(body);
+      res.send("Success");
     });
   },
   getPayment: function(req, res) {

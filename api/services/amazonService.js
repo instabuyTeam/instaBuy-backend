@@ -14,18 +14,26 @@ module.exports = {
     amazon.execute('ItemSearch', {
       'SearchIndex': filter,
       'Keywords': keywords,
-      'ResponseGroup': 'ItemAttributes, Offers, Images'
-    }).then(callback).catch(callback);
+      'ResponseGroup': 'ItemAttributes,Offers,Images'
+    }).then(callback).catch((err) => {
+      console.log(err);
+    });
+
+    // amazon.execute('ItemSearch', {
+    //   'SearchIndex': filter,
+    //   'Keywords': keywords,
+    //   'ResponseGroup': 'ItemAttributes, Offers, Images'
+    // }).then(callback).catch(callback);
   },
-  createCart: function(id, callback){
-    amazon.execute('CartCreate',{
+  createCart: function(id, callback) {
+    amazon.execute('CartCreate', {
       'Item.1.ASIN': id,
       'Item.1.Quantity': 1
     }).then(callback).catch(callback);
   },
   getCart: function(id, callback) {
-    amazon.execute('CartGet',  {
-      'CartId' : id
+    amazon.execute('CartGet', {
+      'CartId': id
     }).then(callback).catch(callback)
   },
   test: function(callback) {

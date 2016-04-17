@@ -78,7 +78,7 @@ module.exports = {
       })
     }, (err, resp, body) => {
       if (err) res.send(err);
-      res.send(JSON.parse(body));
+      res.send(body);
     });
   },
   getPayment: function(req, res) {

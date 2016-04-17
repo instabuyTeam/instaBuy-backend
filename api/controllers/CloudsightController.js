@@ -7,45 +7,68 @@
 
 var cloudsight = require('cloudsight')({
   apikey: 'hBrRMUZtKivVD4rsEjH2Hg'
-});
+}),fs = require('fs');
 
 module.exports = {
-  getImg: function(req, res) {
+  img: function(req, res) {
+    console.log(req.body.img_url);
     var image = {
-      remote_image_url: req.params('imageurl'),
+      remote_image_url: req.body.img_url,
       locale: 'en-Us'
     }
+
     cloudsight.request(image, true, (err, data) => {
-      if (err) throw err;
+      if (err) res.send(err);
+      console.log(data);
+
+
+
       var filter = textService.findFilter(data.name);
+      console.log(filter);
       amazonService.findItem(filter, data.name, (response) => {
+        if(typeof(response.result.ItemSearchResponse.Items[0].Item) == "undefined"){
+          res.send(response);
+        };
+
+
         var topResults = response.result.ItemSearchResponse.Items[0].Item.splice(0, 3);
+        // res.send(topResults);
+
+        var results = {
+          status: '',
+          imgUrl: '',
+          brand: '',
+          description: '',
+          normalPrice: '',
+          webStore: '',
+          asin: ''
+        }
 
         var filteredResults = topResults.map((cur) => {
           // console.log(cur.Offers[0].TotalOffers[0]);
-            if (cur.Offers[0].TotalOffers[0] == '0') {
-              return {
-                imgUrl: cur.SmallImage[0].URL,
-                brand: cur.ItemAttributes[0].Brand,
-                description: cur.ItemAttributes[0].Feature,
-                normalPrice: cur.ItemAttributes[0].ListPrice[0].FormattedPrice[0],
-                // offerPrice: cur.Offers[0].Offer[0].OfferListing[0].Price[0].FormattedPrice,
-                webStore: cur.ItemAttributes[0].Publisher[0],
-                asin: cur.ASIN[0]
-              }
-            } else {
-              return {
-                imgUrl: cur.SmallImage[0].URL,
-                brand: cur.ItemAttributes[0].Brand,
-                description: cur.ItemAttributes[0].Feature,
-                normalPrice: cur.ItemAttributes[0].ListPrice[0].FormattedPrice[0],
-                offerPrice: cur.Offers[0].Offer[0].OfferListing[0].Price[0].FormattedPrice,
-                webStore: cur.ItemAttributes[0].Publisher[0],
-                asin: cur.ASIN[0]
-              }
+          if (cur.Offers[0].TotalOffers[0] == '0') {
+            console.log(true);
+            results = {
+              imgUrl: cur.SmallImage[0].URL,
+              // brand: cur.ItemAttributes[0].Brand,
+              description: cur.ItemAttributes[0].Feature,
+              normalPrice: cur.ItemAttributes[0].ListPrice[0].FormattedPrice[0],
+              // webStore: cur.ItemAttributes[0].Publisher[0],
+              asin: cur.ASIN[0]
             }
-
-          })
+            return results;
+          } else {
+            return {
+              imgUrl: cur.SmallImage[0].URL,
+              // brand: cur.ItemAttributes[0].Brand,
+              description: cur.ItemAttributes[0].Feature,
+              // normalPrice: cur.ItemAttributes[0].ListPrice[0].FormattedPrice[0],
+              // webStore: cur.ItemAttributes[0].Publisher[0],
+              asin: cur.ASIN[0]
+            }
+          }
+        })
+        console.log('done');
         res.send(filteredResults);
       });
     })
@@ -53,7 +76,8 @@ module.exports = {
   cart: function(req, res) {
     var id = req.param('id');
     amazonService.createCart(id, (response) => {
-      res.send(response);
+      res.send(response.result.CartCreateResponse.Cart[0].PurchaseURL[0]);
+      console.log('response');
       // res.send(response.result.Cart[0].PurchaseURL);
     })
   },
@@ -78,32 +102,32 @@ module.exports = {
 
       var filteredResults = topResults.map((cur) => {
         // console.log(cur.Offers[0].TotalOffers[0]);
-          if (cur.Offers[0].TotalOffers[0] == '0') {
-            return {
-              imgUrl: cur.SmallImage[0].URL,
-              brand: cur.ItemAttributes[0].Brand,
-              description: cur.ItemAttributes[0].Feature,
-              normalPrice: cur.ItemAttributes[0].ListPrice[0].FormattedPrice[0],
-              // offerPrice: cur.Offers[0].Offer[0].OfferListing[0].Price[0].FormattedPrice,
-              webStore: cur.ItemAttributes[0].Publisher[0],
-              asin: cur.ASIN[0]
-            }
-          } else {
-            return {
-              imgUrl: cur.SmallImage[0].URL,
-              brand: cur.ItemAttributes[0].Brand,
-              description: cur.ItemAttributes[0].Feature,
-              normalPrice: cur.ItemAttributes[0].ListPrice[0].FormattedPrice[0],
-              offerPrice: cur.Offers[0].Offer[0].OfferListing[0].Price[0].FormattedPrice,
-              webStore: cur.ItemAttributes[0].Publisher[0],
-              asin: cur.ASIN[0]
-            }
+        if (cur.Offers[0].TotalOffers[0] == '0') {
+          return {
+            imgUrl: cur.SmallImage[0].URL,
+            brand: cur.ItemAttributes[0].Brand,
+            description: cur.ItemAttributes[0].Feature,
+            normalPrice: cur.ItemAttributes[0].ListPrice[0].FormattedPrice[0],
+            // offerPrice: cur.Offers[0].Offer[0].OfferListing[0].Price[0].FormattedPrice,
+            webStore: cur.ItemAttributes[0].Publisher[0],
+            asin: cur.ASIN[0]
           }
+        } else {
+          return {
+            imgUrl: cur.SmallImage[0].URL,
+            brand: cur.ItemAttributes[0].Brand,
+            description: cur.ItemAttributes[0].Feature,
+            normalPrice: cur.ItemAttributes[0].ListPrice[0].FormattedPrice[0],
+            offerPrice: cur.Offers[0].Offer[0].OfferListing[0].Price[0].FormattedPrice,
+            webStore: cur.ItemAttributes[0].Publisher[0],
+            asin: cur.ASIN[0]
+          }
+        }
 
-        })
-        res.send(filteredResults);
-        // raw xml response is also available
-        // console.log(response.responseBody);
+      })
+      res.send(filteredResults);
+      // raw xml response is also available
+      // console.log(response.responseBody);
     });
   }
 };

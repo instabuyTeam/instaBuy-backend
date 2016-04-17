@@ -1,7 +1,8 @@
 var filters = {
-  'Electronics': ['phones', 'iphone', 'laptop'],
-  'FashionMen': ['wallet', 'man'],
-  'Shoes': ['shoes', 'sneakers']
+  'Electronics': ['phone','phones', 'iphone', 'laptop', 'macbook', 'ipads', 'ipod', 'apple','android','samsung','galaxy', 'computer'],
+  'FashionMen': ['wallet', 'man', 'men', 'wallets'],
+  'Shoes': ['shoes', 'sneakers', 'shoe', 'sneaker'],
+
 };
 
 

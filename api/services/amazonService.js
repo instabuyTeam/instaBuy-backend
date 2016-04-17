@@ -12,25 +12,21 @@ module.exports = {
   //specific key words
   findItem: function(filter, keywords, callback) {
     amazon.execute('ItemSearch', {
-      'SearchIndex': 'FashionMen',
-      'Keywords': 'Black Leather Bifold Wallet',
+      'SearchIndex': filter,
+      'Keywords': keywords,
       'ResponseGroup': 'ItemAttributes, Offers, Images'
-    }).then(callback).catch((err) => {
-      console.error(err);
-    });
+    }).then(callback).catch(callback);
   },
-  createCart: function(id, callback) {
-    amazon.execute('CartCreate', {
+  createCart: function(id, callback){
+    amazon.execute('CartCreate',{
       'Item.1.ASIN': id,
       'Item.1.Quantity': 1
-    }).then(callback).catch((err) => {
-      if (err) throw err;
-    })
+    }).then(callback).catch(callback);
   },
-  getCart: function(id) {
+  getCart: function(id, callback) {
     amazon.execute('CartGet',  {
       'CartId' : id
-    })
+    }).then(callback).catch(callback)
   },
   test: function(callback) {
     amazon.execute('ItemLookup', {

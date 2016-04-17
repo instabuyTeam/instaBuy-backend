@@ -47,5 +47,6 @@ module.exports.routes = {
   ***************************************************************************/
     'get /cloudsight/getImg/:imgurl' : 'CloudsightController.getImg',
     'get /cloudsight/cart/:id' : 'CloudsightController.cart',
-    'get /cloudsight/getcart/:id' :' CloudsightController.getcart'
+    'get /cloudsight/getcart/:id' :' CloudsightController.getcart',
+    'get /users/notify/:username' : 'UsersController.notify'
 };

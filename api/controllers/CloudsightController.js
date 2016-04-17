@@ -37,17 +37,20 @@ module.exports = {
     })
   },
   cart: function(req, res) {
-    amazonService.createCart(req.param('id'), (response) => {
-      res.send(response.result.Cart[0].PurchaseURL);
+		var id = req.param('id');
+    amazonService.createCart(id, (response) => {
+			res.send(response);
+      // res.send(response.result.Cart[0].PurchaseURL);
     })
   },
   getCart: function(req, res) {
-    amazonService.getCart(req.param('id'), (response) => {
+		var id = req.param('id');
+    amazonService.getCart(id, (response) => {
       res.send(response);
     })
   },
   test: function(req, res) {
-    amazonService.test((response) => {
+    amazonService.findItem('Shoes','Nike Shoes',(response) => {
       res.send(response);
       // raw xml response is also available
       // console.log(response.responseBody);

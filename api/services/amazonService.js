@@ -1,10 +1,11 @@
 var util = require('util'),
-  OperationHelper = require('apac').OperationHelper;
+  OperationHelper = require('apac').OperationHelper,
+  config = require('./config.js');
 
 var amazon = new OperationHelper({
-  awsId: 'AKIAJHH2FWGDWP25SNIA',
-  awsSecret: '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',
-  assocId: 'instabuy09-20'
+  awsId: config.awsId,
+  awsSecret: config.awsSecret,
+  assocId: config.assocId
 });
 
 module.exports = {

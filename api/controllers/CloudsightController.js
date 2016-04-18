@@ -4,9 +4,9 @@
  * @description :: Server-side logic for managing cloudsights
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
-
+var config = require("./config.js");
 var cloudsight = require('cloudsight')({
-  apikey: 'hBrRMUZtKivVD4rsEjH2Hg'
+  apikey: 'config.cloudsight'
 }),fs = require('fs');
 
 module.exports = {
@@ -105,7 +105,7 @@ module.exports = {
         if (cur.Offers[0].TotalOffers[0] == '0') {
           return {
             imgUrl: cur.SmallImage[0].URL,
-            brand: cur.ItemAttributes[0].Brand,
+            // brand: cur.ItemAttributes[0].Brand,
             description: cur.ItemAttributes[0].Feature,
             normalPrice: cur.ItemAttributes[0].ListPrice[0].FormattedPrice[0],
             // offerPrice: cur.Offers[0].Offer[0].OfferListing[0].Price[0].FormattedPrice,
@@ -115,10 +115,10 @@ module.exports = {
         } else {
           return {
             imgUrl: cur.SmallImage[0].URL,
-            brand: cur.ItemAttributes[0].Brand,
+            // brand: cur.ItemAttributes[0].Brand,
             description: cur.ItemAttributes[0].Feature,
             normalPrice: cur.ItemAttributes[0].ListPrice[0].FormattedPrice[0],
-            offerPrice: cur.Offers[0].Offer[0].OfferListing[0].Price[0].FormattedPrice,
+            // offerPrice: cur.Offers[0].Offer[0].OfferListing[0].Price[0].FormattedPrice,
             webStore: cur.ItemAttributes[0].Publisher[0],
             asin: cur.ASIN[0]
           }

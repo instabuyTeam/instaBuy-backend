@@ -4,7 +4,7 @@
  * @description :: Server-side logic for managing cloudsights
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
-var config = require("./config.js");
+var config = require("../../config.js");
 var cloudsight = require('cloudsight')({
   apikey: 'config.cloudsight'
 }),fs = require('fs');
@@ -20,56 +20,33 @@ module.exports = {
     cloudsight.request(image, true, (err, data) => {
       if (err) res.send(err);
       console.log(data);
-
-
-
       var filter = textService.findFilter(data.name);
-      console.log(filter);
       amazonService.findItem(filter, data.name, (response) => {
-        if(typeof(response.result.ItemSearchResponse.Items[0].Item) == "undefined"){
-          res.send(response);
-        };
-
-
-        var topResults = response.result.ItemSearchResponse.Items[0].Item.splice(0, 3);
-        // res.send(topResults);
-
-        var results = {
-          status: '',
-          imgUrl: '',
-          brand: '',
-          description: '',
-          normalPrice: '',
-          webStore: '',
-          asin: ''
-        }
-
-        var filteredResults = topResults.map((cur) => {
-          // console.log(cur.Offers[0].TotalOffers[0]);
-          if (cur.Offers[0].TotalOffers[0] == '0') {
-            console.log(true);
-            results = {
-              imgUrl: cur.SmallImage[0].URL,
-              // brand: cur.ItemAttributes[0].Brand,
-              description: cur.ItemAttributes[0].Feature,
-              normalPrice: cur.ItemAttributes[0].ListPrice[0].FormattedPrice[0],
-              // webStore: cur.ItemAttributes[0].Publisher[0],
-              asin: cur.ASIN[0]
-            }
-            return results;
-          } else {
-            return {
-              imgUrl: cur.SmallImage[0].URL,
-              // brand: cur.ItemAttributes[0].Brand,
-              description: cur.ItemAttributes[0].Feature,
-              // normalPrice: cur.ItemAttributes[0].ListPrice[0].FormattedPrice[0],
-              // webStore: cur.ItemAttributes[0].Publisher[0],
-              asin: cur.ASIN[0]
-            }
+          var { result:{ItemSearchResponse:{Items:[ItemsObj]}} } = response;
+          var { result:{ItemSearchResponse:{Items:[ResultsObj]}} } = response;
+          var {Request:[ObjList]} = ResultsObj;
+          var {IsValid:[status]} = ObjList;
+          var {Item} = ItemsObj;
+          var topresults = Item.splice(0,5).map((curr)=>{
+              var {ASIN:[itemNumber]} = curr;
+              var {DetailPageURL:[Itemlink]}= curr;
+              var {MediumImage:[ImgInfo]} = curr;
+              var {ItemAttributes:[Attributes]} = curr;
+              var {Offers:[ItemOffers]} = curr;
+              var {URL:[ItemImg]} = ImgInfo;
+              var {Feature:[ItemFeature]} = Attributes;
+              var {ListPrice:[ItemPricing]} = Attributes;
+              var {Title:[ItemTitle]} = Attributes;
+              var {TotalOffers:[ItemTotalOffers]} = ItemOffers;
+              return {
+                itemNumber, Itemlink, ItemImg, ItemFeature, ItemPricing, ItemTitle, ItemTotalOffers
+              }
+          });
+          if(status){
+            res.send(topresults);
+          }else{
+            res.send(response);
           }
-        })
-        console.log('done');
-        res.send(filteredResults);
       });
     })
   },
@@ -89,45 +66,43 @@ module.exports = {
   },
   test: function(req, res) {
     amazonService.findItem('Shoes', 'Nike Shoes', (response) => {
-      res.send(response);
-      // raw xml response is also available
-      // console.log(response.responseBody);
+
+      try {
+        var { result:{ItemSearchResponse:{Items:[ItemsObj]}} } = response;
+        var { result:{ItemSearchResponse:{Items:[ResultsObj]}} } = response;
+        var {Request:[ObjList]} = ResultsObj;
+        var {IsValid:[status]} = ObjList;
+        var {Item} = ItemsObj;
+
+        var topresults = Item.splice(0,5).map((curr)=>{
+            var {ASIN:[itemNumber]} = curr;
+            var {DetailPageURL:[Itemlink]}= curr;
+            var {MediumImage:[ImgInfo]} = curr;
+            var {ItemAttributes:[Attributes]} = curr;
+            var {Offers:[ItemOffers]} = curr;
+            var {URL:[ItemImg]} = ImgInfo;
+            var {Feature:[ItemFeature]} = Attributes;
+            var {ListPrice:[ItemPricing]} = Attributes;
+            var {Title:[ItemTitle]} = Attributes;
+            var {TotalOffers:[ItemTotalOffers]} = ItemOffers;
+
+            return {
+              itemNumber, Itemlink, ItemImg, ItemFeature, ItemPricing, ItemTitle, ItemTotalOffers
+            }
+        });
+      } catch (e) {
+        console.log(e);
+      }
+
+      if(status){
+        res.send(topresults);
+      }else{
+        res.send(response);
+      }
     });
   },
   testImg: function(req, res) {
-    amazonService.findItem('Shoes', 'Nike Shoes', (response) => {
-      // if (err) res.send(err);
-      var topResults = response.result.ItemSearchResponse.Items[0].Item.splice(0, 3);
-      // res.send(topResults);
 
-      var filteredResults = topResults.map((cur) => {
-        // console.log(cur.Offers[0].TotalOffers[0]);
-        if (cur.Offers[0].TotalOffers[0] == '0') {
-          return {
-            imgUrl: cur.SmallImage[0].URL,
-            // brand: cur.ItemAttributes[0].Brand,
-            description: cur.ItemAttributes[0].Feature,
-            normalPrice: cur.ItemAttributes[0].ListPrice[0].FormattedPrice[0],
-            // offerPrice: cur.Offers[0].Offer[0].OfferListing[0].Price[0].FormattedPrice,
-            webStore: cur.ItemAttributes[0].Publisher[0],
-            asin: cur.ASIN[0]
-          }
-        } else {
-          return {
-            imgUrl: cur.SmallImage[0].URL,
-            // brand: cur.ItemAttributes[0].Brand,
-            description: cur.ItemAttributes[0].Feature,
-            normalPrice: cur.ItemAttributes[0].ListPrice[0].FormattedPrice[0],
-            // offerPrice: cur.Offers[0].Offer[0].OfferListing[0].Price[0].FormattedPrice,
-            webStore: cur.ItemAttributes[0].Publisher[0],
-            asin: cur.ASIN[0]
-          }
-        }
 
-      })
-      res.send(filteredResults);
-      // raw xml response is also available
-      // console.log(response.responseBody);
-    });
   }
 };

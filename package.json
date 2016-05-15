@@ -37,5 +37,9 @@
     "url": "git://github.com/jony/instaBuy-backend.git"
   },
   "author": "jony",
-  "license": ""
+  "license": "",
+  "devDependencies": {
+    "grunt-es6-transpiler": "^1.0.2",
+    "sails-hook-babel": "^6.0.1"
+  }
 }

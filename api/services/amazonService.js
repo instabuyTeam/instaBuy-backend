@@ -1,6 +1,7 @@
 var util = require('util'),
   OperationHelper = require('apac').OperationHelper,
-  config = require('./config.js');
+  config = require('../../config.js'),
+  fs = require('fs');
 
 var amazon = new OperationHelper({
   awsId: config.awsId,
@@ -16,15 +17,7 @@ module.exports = {
       'SearchIndex': filter,
       'Keywords': keywords,
       'ResponseGroup': 'ItemAttributes,Offers,Images'
-    }).then(callback).catch((err) => {
-      console.log(err);
-    });
-
-    // amazon.execute('ItemSearch', {
-    //   'SearchIndex': filter,
-    //   'Keywords': keywords,
-    //   'ResponseGroup': 'ItemAttributes, Offers, Images'
-    // }).then(callback).catch(callback);
+    }).then(callback).catch(callback);
   },
   createCart: function(id, callback) {
     amazon.execute('CartCreate', {
@@ -40,9 +33,7 @@ module.exports = {
   test: function(callback) {
     amazon.execute('ItemLookup', {
       'ItemId': 'B019EU9SWW'
-    }).then(callback).catch((err) => {
-      if (err) throw err;
-    })
+    }).then(callback).catch(callback)
   }
 
 }
